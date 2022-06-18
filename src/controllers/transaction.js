@@ -1,5 +1,5 @@
 const { user, transaction, product, profile, producttransaction } = require("../../models");
-// const midtransClient = require("midtrans-client");
+const midtransClient = require("midtrans-client");
 
 exports.addTransaction = async (req, res) => {
   try {
@@ -39,39 +39,38 @@ exports.addTransaction = async (req, res) => {
       await producttransaction.bulkCreate(transactionProducts);
     
 
-    // let snap = new midtransClient.Snap({
-    //   // Set to true if you want Production Environment (accept real transaction).
-    //   isProduction: false,
-    //   serverKey: process.env.MIDTRANS_SERVER_KEY,
-    // });
+    let snap = new midtransClient.Snap({
+      // Set to true if you want Production Environment (accept real transaction).
+      isProduction: false,
+      serverKey: process.env.MIDTRANS_SERVER_KEY,
+    });
 
-    // let parameter = {
-    //   transaction_details: {
-    //     order_id: datatransaction.id,
-    //     // order_id: [123, 056],
-    //     gross_amount: datatransaction.price,
-    //   },
-    //   credit_card: {
-    //     secure: true,
-    //   },
-    //   customer_details: {
-    //     full_name: buyerData?.name,
-    //     email: buyerData?.email,
-    //     phone: buyerData?.profile?.phone,
-    //   },
-    // };
+    let parameter = {
+      transaction_details: {
+        order_id: datatransaction.id,
+        // order_id: [123, 056],
+        gross_amount: datatransaction.price,
+      },
+      credit_card: {
+        secure: true,
+      },
+      customer_details: {
+        full_name: buyerData?.name,
+        email: buyerData?.email,
+        phone: buyerData?.profile?.phone,
+      },
+    };
 
-    // const payment = await snap.createTransaction(parameter);
+    const payment = await snap.createTransaction(parameter);
     // console.log(payment);
 
     res.send({
       status: "pending",
       message: "Pending transaction payment gateway",
-    //   payment,
-    //   id: datatransaction.id,
+      payment,
+      id: datatransaction.id,
       product: {
         // id: data.idProduct,
-
       },
     });
   } catch (error) {
@@ -83,113 +82,17 @@ exports.addTransaction = async (req, res) => {
   }
 };
 
-// const MIDTRANS_CLIENT_KEY = process.env.MIDTRANS_CLIENT_KEY;
-// const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY;
+const MIDTRANS_CLIENT_KEY = process.env.MIDTRANS_CLIENT_KEY;
+const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY;
 
-// const core = new midtransClient.CoreApi();
+const core = new midtransClient.CoreApi();
 
-// core.apiConfig.set({
-//   isProduction: false,
-//   serverKey: MIDTRANS_SERVER_KEY,
-//   clientKey: MIDTRANS_CLIENT_KEY,
-// });
+core.apiConfig.set({
+  isProduction: false,
+  serverKey: MIDTRANS_SERVER_KEY,
+  clientKey: MIDTRANS_CLIENT_KEY,
+});
 
-// exports.addTransaction = async (req, res) => {
-//   try {
-//     // Prepare transaction data from body here ...
-//     let data = req.body;
-//     data = {
-//       id: parseInt(data.idProduct + Math.random().toString().slice(3, 8)),
-//       ...data,
-//       idBuyer: req.user.id,
-//       status: "pending",
-//     };
-
-//     // Insert transaction data here ...
-//     const newData = await transaction.create(data);
-
-//     // Get buyer data here ...
-
-//     // Create Snap API instance here ...
-//     // let snap = new midtransClient.Snap({
-//     //   // Set to true if you want Production Environment (accept real transaction).
-//     //   isProduction: false,
-//     //   serverKey: process.env.MIDTRANS_SERVER_KEY,
-//     // });
-
-//     // // Create parameter for Snap API here ...
-//     // let parameter = {
-//     //   transaction_details: {
-//     //     order_id: newData.id,
-//     //     gross_amount: newData.price,
-//     //   },
-//     //   credit_card: {
-//     //     secure: true,
-//     //   },
-//     //   customer_details: {
-//     //     full_name: buyerData?.name,
-//     //     email: buyerData?.email,
-//     //     phone: buyerData?.profile?.phone,
-//     //   },
-//     // };
-
-//     // Create trasaction token & redirect_url with snap variable here ...
-//     // const payment = await snap.createTransaction(parameter);
-//     // console.log(payment);
-
-//     res.send({
-//       status: "pending",
-//       message: "Pending transaction payment gateway",
-//       // payment,
-//       product: {
-//         id: data.idProduct,
-//       },
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     res.send({
-//       status: "failed",
-//       message: "Server Error",
-//     });
-//   }
-// };
-
-exports.addTransactionCart = async (req, res) => {
-  try {
-    // const idProduct = req.params;
-    // let productData = await product.findOne({
-    //   where: {
-    //     id: idProduct.id,
-    //   },
-    //   attributes: {
-    //     exclude: ["createdAt", "updatedAt"],
-    //   },
-    // });
-
-    // productData = JSON.parse(JSON.stringify(productData));
-
-    data = {
-      // idSeller: productData.idUser,
-      idBuyer: req.user.id,
-      // idProduct: productData.id,
-      price: req.body.price,
-    };
-
-    let datatransaction = await transaction.create(data);
-    //   console.log(idProduct)
-    res.send({
-      status: "success",
-      message: "Add transaction finished",
-      datatransaction,
-    });
-  } catch (error) {
-    console.log(error);
-    res.send({
-      status: "failed",
-      message: "Server Error",
-    });
-  }
-};
 
 exports.getTransactions = async (req, res) => {
   try {
@@ -305,7 +208,7 @@ exports.notification = async (req, res) => {
       } else if (fraudStatus == "accept") {
         // TODO set transaction status on your database to 'success'
         // and response with 200 OK
-        updateProduct(orderId);
+        // updateProduct(orderId);
         updateTransaction("success", orderId);
         res.status(200);
       }

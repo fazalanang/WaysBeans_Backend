@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/v1/", router);
-// app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static("uploads"));
 
 app.get("/", function (req, res) {
   res.send({
