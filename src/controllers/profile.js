@@ -47,10 +47,10 @@ exports.updateProfile = async (req, res) => {
   try {
     const id = req.params.id;
     const data = {
-      phone: req.body.phone,
-      gender: req.body.gender,
-      address: req.body.address,
-      image: req.file.filename,
+      phone: req?.body?.phone,
+      gender: req?.body?.gender,
+      address: req?.body?.address,
+      image: req?.file?.filename,
     };
 
     await profile.update(data, {

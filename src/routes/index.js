@@ -12,16 +12,18 @@ const {
     addProduct,
     getAllProducts,
     getProduct,
-    updateProduct,
+    // updateProduct,
     deleteProduct,
   } = require("../controllers/product");
 
   const {
-    addTransaction,
-    // addTransactionCart,
-    getTransactions,
+    addTransaction, 
+    getTransaction,
+    getAllTransactions,
     deleteTransaction,
     notification,
+    updateProduct,
+    updateTrans
   } = require("../controllers/transaction");
   const { getProfile, updateProfile } = require("../controllers/profile");
   const {
@@ -44,7 +46,7 @@ router.get("/check-auth", auth, checkAuth);
 router.post("/product", auth, uploadFile("image"), addProduct);
 router.get("/products", getAllProducts);
 router.get("/product/:id", auth, getProduct);
-router.patch("/product/:id", auth, uploadFile("image"), updateProduct);
+// router.patch("/product/:id", auth, uploadFile("image"), updateProduct);
 router.delete("/product/:id", auth, deleteProduct);
 
 router.get("/profile", auth, getProfile);
@@ -57,9 +59,13 @@ router.delete("/cart/:id", auth, deleteCart);
 
 router.post("/transaction", auth, addTransaction);
 // router.post("/transaction", auth, addTransactionCart);
-router.get("/transactions", auth, getTransactions);
+router.get("/transaction", auth, getTransaction);
+router.get("/transactions",auth, getAllTransactions);
 router.delete("/transaction/:id", auth, deleteTransaction);
-
 router.post("/notification", notification);
+router.post("/update-product", updateProduct);
+router.patch("/transaction/:id", auth, updateTrans);
+
+
 
 module.exports = router;

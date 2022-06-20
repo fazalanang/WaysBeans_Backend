@@ -21,6 +21,9 @@ module.exports = {
       qty: {
         type: Sequelize.INTEGER
       },
+      address: {
+        type: Sequelize.STRING
+      },
       status: {
         type: Sequelize.STRING
       },
