@@ -22,7 +22,7 @@ const {
     getAllTransactions,
     deleteTransaction,
     notification,
-    updateProduct,
+    // updateProduct,
     updateTrans
   } = require("../controllers/transaction");
   const { getProfile, updateProfile } = require("../controllers/profile");
@@ -63,7 +63,7 @@ router.get("/transaction", auth, getTransaction);
 router.get("/transactions",auth, getAllTransactions);
 router.delete("/transaction/:id", auth, deleteTransaction);
 router.post("/notification", notification);
-router.post("/update-product", updateProduct);
+// router.post("/update-product", updateProduct);
 router.patch("/transaction/:id", auth, updateTrans);
 
 

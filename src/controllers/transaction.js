@@ -50,7 +50,6 @@ exports.addTransaction = async (req, res) => {
     let parameter = {
       transaction_details: {
         order_id: datatransaction.id,
-        // order_id: [123, 056],
         gross_amount: datatransaction.price,
       },
       credit_card: {
@@ -195,33 +194,30 @@ const updateProduct = async (orderId) => {
 //   await product.update({ qty }, { where: { id: productData.id } });
 
 
-let data = await transaction.findOne({
-  where: {
-    id: orderId,
-  },
-  attributes: {
-    exclude: ["createdAt", "updatedAt"],
-  },
-  include: {
-    model: product,
-    as: "products",
+  let data = await transaction.findOne({
+    where: {
+      id: orderId,
+    },
     attributes: {
       exclude: ["createdAt", "updatedAt"],
     },
-  },
-});
+    include: {
+      model: product,
+      as: "products",
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
+    },
+  });
 
+  const dataUpdate= data.products.map(item =>{
+    return{
+      id: item.id,
+      qty: item.qty - item.producttransaction.qty
+    }
+  })
 
-const dataUpdate= data.products.map(item =>{
-  return{
-    id: item.id,
-    qty: item.qty - item.producttransaction.qty
-  }
-})
-
-await product.bulkCreate(dataUpdate,{updateOnDuplicate:["qty"]})
-
-
+  await product.bulkCreate(dataUpdate,{updateOnDuplicate:["qty"]})
 };
 
 exports.notification = async (req, res) => {
@@ -300,53 +296,6 @@ exports.deleteTransaction = async (req, res) => {
     });
   }
 };
-
-
-exports.updateProduct = async (req, res) => {
-  try {
-    // const { id } = req.body.id;
-
-   
-    let data = await transaction.findOne({
-      where: {
-        id: req.body.id,
-      },
-      attributes: {
-        exclude: ["createdAt", "updatedAt"],
-      },
-      include: {
-        model: product,
-        as: "products",
-        attributes: {
-          exclude: ["createdAt", "updatedAt"],
-        },
-      },
-    });
-
-    
-    const dataUpdate= data.products.map(item =>{
-      return{
-        id: item.id,
-        qty: item.qty - item.producttransaction.qty
-      }
-    })
-
-    const dataproduct = await product.bulkCreate(dataUpdate,{updateOnDuplicate:["qty"]})
-
-    
-    res.send({
-      status: "success...",
-      dataproduct,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      status: "failed",
-      message: "Server Error",
-    });
-  }
-};
-
 
 exports.getAllTransactions = async (req, res) => {
   try {
